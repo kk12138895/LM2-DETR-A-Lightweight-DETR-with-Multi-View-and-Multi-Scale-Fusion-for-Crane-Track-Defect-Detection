@@ -220,11 +220,6 @@ Report AP definitions explicitly. For speed or complexity measurements, also spe
 
 Large model files can be distributed separately; document checkpoint filenames, download links, and checksums here when available.
 
-## Acknowledgments and license
-
-We thank the authors of **D-FINE**, which serves as our baseline and provides the starting codebase for LM2-DETR, and the authors of **RT-DETR** and other upstream components. The proposed LM2-DETR method and its contributions are described above.
-
-The repository retains the existing Apache License 2.0 text in `LICENSE` and source-level copyright notices. Third-party components may have their own notices and terms. The figures in this README are extracted from the LM2-DETR manuscript.
 
 ## Citation
 
