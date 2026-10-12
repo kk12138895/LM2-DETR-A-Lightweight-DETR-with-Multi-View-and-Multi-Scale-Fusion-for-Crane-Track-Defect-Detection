@@ -1,0 +1,2 @@
+# LM2-DETR-A-Lightweight-DETR-with-Multi-View-and-Multi-Scale-Fusion-for-Crane-Track-Defect-Detection
+LM²-DETR is a lightweight DETR-based framework for crane track defect detection. It integrates a GhostConv-based backbone, Cross-view Gated Fusion (CGF), Top-k Sparse Attention (TSA), and C3K2-FPN to enhance multi-view and multi-scale feature representation, improving detection accuracy while reducing model parameters.
