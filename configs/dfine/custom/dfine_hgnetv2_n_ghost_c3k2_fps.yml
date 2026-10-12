@@ -1,0 +1,50 @@
+__include__: [
+  '../../dataset/railmix_detection.yml',
+  '../../runtime.yml',
+  '../include/dataloader.yml',
+  '../include/optimizer.yml',
+  '../include/dfine_hgnetv2.yml',
+]
+
+output_dir: ./output/dfine_hgnetv2_n_ghost_c3k2_fps
+
+num_classes: 5
+
+print_freq: 10
+
+# GhostConv123 + C3K2 encoder (matches dfine_hgnetv2_n_GhostConv123_Native_C3K2 *.pth)
+DFINE:
+  backbone: HGNetv2
+  encoder: HybridEncoderC3K2
+
+HGNetv2:
+  name: 'B0'
+  return_idx: [2, 3]
+  freeze_at: -1
+  freeze_norm: False
+  use_lab: True
+  pretrained: False
+
+HybridEncoderC3K2:
+  in_channels: [512, 1024]
+  feat_strides: [16, 32]
+  hidden_dim: 128
+  use_encoder_idx: [1]
+  dim_feedforward: 512
+  expansion: 0.34
+  depth_mult: 0.5
+
+DFINETransformer:
+  feat_channels: [128, 128]
+  feat_strides: [16, 32]
+  hidden_dim: 128
+  dim_feedforward: 512
+  num_levels: 2
+  num_layers: 3
+  eval_idx: -1
+  num_points: [6, 6]
+
+val_dataloader:
+  total_batch_size: 1
+
+use_ema: False

@@ -1,0 +1,39 @@
+task: detection
+
+evaluator:
+  type: CocoEvaluator
+  iou_types: ['bbox', ]
+
+num_classes: 80
+remap_mscoco_category: False
+
+train_dataloader:
+  type: DataLoader
+  dataset:
+    type: CocoDetection
+    img_folder: d:/LearningSelections/训练结果/fps测试/datasets/coco8/images/train
+    ann_file: d:/LearningSelections/训练结果/fps测试/datasets/coco8/labels/train
+    return_masks: False
+    transforms:
+      type: Compose
+      ops: ~
+  shuffle: True
+  num_workers: 0
+  collate_fn:
+    type: BatchImageCollateFunction
+
+val_dataloader:
+  type: DataLoader
+  dataset:
+    type: CocoDetection
+    img_folder: d:/LearningSelections/训练结果/fps测试/datasets/coco8/images/val
+    ann_file: d:/LearningSelections/训练结果/fps测试/datasets/coco8/labels/val
+    return_masks: False
+    transforms:
+      type: Compose
+      ops: ~
+  shuffle: False
+  num_workers: 0
+  total_batch_size: 1
+  collate_fn:
+    type: BatchImageCollateFunction

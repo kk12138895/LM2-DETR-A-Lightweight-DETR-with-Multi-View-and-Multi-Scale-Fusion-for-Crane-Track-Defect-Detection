@@ -1,0 +1,45 @@
+task: detection
+
+evaluator:
+  type: CocoEvaluator
+  iou_types: ['bbox', ]
+
+num_classes: 5
+remap_mscoco_category: True
+
+train_dataloader:
+  type: DataLoader
+  dataset:
+    type: CocoDetection
+    #/public/home/miaofangze2023/yolotest/D-FINE-master/datasets/rail-mix-coco
+    img_folder:  /mnt/e/project/D-FINE-master/datasets/rail-mix-coco/train
+    #D:\LearningSelections\D-FINE-master\datasets\rail-mix-coco\Annotations\train.json
+    ann_file: /mnt/e/project/D-FINE-master/datasets/rail-mix-coco/Annotations/train.json
+    return_masks: False
+    transforms:
+      type: Compose
+      ops: ~
+  shuffle: True
+  num_workers: 4
+  drop_last: True
+  collate_fn:
+    type: BatchImageCollateFunction
+
+
+val_dataloader:
+  type: DataLoader
+  dataset:
+    type: CocoDetection
+
+    img_folder: /mnt/e/project/D-FINE-master/datasets/rail-mix-coco/val
+    ann_file:  /mnt/e/project/D-FINE-master/datasets/rail-mix-coco/Annotations/val.json
+
+    return_masks: False
+    transforms:
+      type: Compose
+      ops: ~
+  shuffle: False
+  num_workers: 4
+  drop_last: False
+  collate_fn:
+    type: BatchImageCollateFunction

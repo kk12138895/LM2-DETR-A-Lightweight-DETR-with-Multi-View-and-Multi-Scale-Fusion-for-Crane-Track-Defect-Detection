@@ -1,0 +1,49 @@
+# Local datasets and generated experiment artifacts
+/datasets/
+/output/
+/outputs/
+/logs/
+/runs/
+/weight/
+/weights/
+/checkpoints/
+/tmp/
+/path/
+/experience/
+
+# Model binaries and archives
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.engine
+*.plan
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+
+# Python / editor / machine state
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+events.out.tfevents.*
+
+# Local credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Existing generated previews at repository root
+/onnx_result.jpg
+/rail4_3.jpg

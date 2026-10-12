@@ -1,0 +1,40 @@
+__include__: [
+  '../../runtime.yml',
+  '../include/dfine_hgnetv2.yml',
+]
+
+output_dir: ./output/dfine_hgnetv2_s_fps
+
+num_classes: 5
+
+DFINE:
+  encoder: HybridEncoder
+
+HGNetv2:
+  name: 'B0'
+  return_idx: [1, 2, 3]
+  freeze_at: -1
+  freeze_norm: False
+  use_lab: True
+  block_conv: conv
+  pretrained: False
+
+DFINETransformer:
+  num_layers: 3
+  eval_idx: -1
+  hidden_dim: 256
+  dim_feedforward: 1024
+  feat_channels: [256, 256, 256]
+  feat_strides: [8, 16, 32]
+  num_levels: 3
+
+HybridEncoder:
+  in_channels: [256, 512, 1024]
+  hidden_dim: 256
+  depth_mult: 0.34
+  expansion: 0.5
+
+val_dataloader:
+  total_batch_size: 1
+
+use_ema: False

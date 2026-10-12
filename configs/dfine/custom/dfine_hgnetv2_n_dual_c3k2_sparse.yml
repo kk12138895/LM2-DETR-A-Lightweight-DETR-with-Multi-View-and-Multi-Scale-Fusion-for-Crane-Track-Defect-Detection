@@ -1,0 +1,116 @@
+__include__: [
+  '../../dataset/railmix_detection.yml',
+  '../../runtime.yml',
+  '../include/dataloader.yml',
+  '../include/optimizer.yml',
+  '../include/dfine_hgnetv2.yml',
+]
+
+output_dir: ./output/kk
+
+num_classes: 5
+print_freq: 10
+
+# Strong single-view C3K2/sparse baseline plus a conservative rot180 auxiliary
+# branch. The fusion gate is initialized near zero, so tuning from the single
+# checkpoint starts almost exactly as the 0.702 AP baseline.
+DFINE:
+  backbone: HGNetv2
+  encoder: HybridEncoderC3K2
+  decoder: DFINETransformer
+  use_rot180_aux: True
+  fusion_channels: [512, 1024]
+  fusion_num_heads: [8, 8]
+  fusion_window_size: [8, 8]
+  fusion_shift_size: [0, 0]
+  fusion_reverse_aux_windows: True
+  fusion_gate_init: -4.0
+  fusion_use_similarity_gate: True
+  fusion_reverse_similarity_gate: True
+  freeze_main_backbone: True
+  freeze_rot180_backbone: True
+  freeze_encoder: True
+  freeze_decoder: True
+  frozen_modules_eval: True
+
+HGNetv2:
+  name: 'B0'
+  return_idx: [2, 3]
+  freeze_at: -1
+  freeze_norm: False
+  use_lab: True
+  pretrained: False
+
+HybridEncoderC3K2:
+  in_channels: [512, 1024]
+  feat_strides: [16, 32]
+  hidden_dim: 128
+  use_encoder_idx: [1]
+  num_encoder_layers: 1
+  nhead: 8
+  dim_feedforward: 512
+  dropout: 0.
+  enc_act: 'gelu'
+  expansion: 0.34
+  depth_mult: 0.5
+  c3k2_expansion: 0.5
+  sparse_rate: 0.5
+  act: 'silu'
+
+DFINETransformer:
+  feat_channels: [128, 128]
+  feat_strides: [16, 32]
+  hidden_dim: 128
+  dim_feedforward: 512
+  num_levels: 2
+  num_layers: 3
+  eval_idx: -1
+  num_points: [6, 6]
+
+# Fine-tune from output/dfine_hgnetv2_n_coco_DFINE_origin/best_stg1.pth.
+# Stage 1 trains only the new rot180 fusion module, protecting the 0.702 AP
+# single-view detector from early BN/optimizer drift.
+epoches: 60
+
+optimizer:
+  type: AdamW
+  params:
+    -
+      params: '^(?=.*backbone)(?!.*norm|bn).*$'
+      lr: 0.00004
+    -
+      params: '^(?=.*backbone)(?=.*norm|bn).*$'
+      lr: 0.00004
+      weight_decay: 0.
+    -
+      params: '^(?=.*rot180_fusion).*$'
+      lr: 0.00005
+    -
+      params: '^(?=.*(?:encoder|decoder))(?=.*(?:norm|bn|bias)).*$'
+      weight_decay: 0.
+
+  lr: 0.00004
+  betas: [0.9, 0.999]
+  weight_decay: 0.0001
+
+lr_scheduler:
+  type: MultiStepLR
+  milestones: [45]
+  gamma: 0.1
+
+lr_warmup_scheduler:
+  type: LinearWarmup
+  warmup_duration: 100
+
+train_dataloader:
+  total_batch_size: 8
+  dataset:
+    transforms:
+      policy:
+        epoch: 0
+  collate_fn:
+    stop_epoch: 500
+    base_size_repeat: ~
+
+val_dataloader:
+  total_batch_size: 8

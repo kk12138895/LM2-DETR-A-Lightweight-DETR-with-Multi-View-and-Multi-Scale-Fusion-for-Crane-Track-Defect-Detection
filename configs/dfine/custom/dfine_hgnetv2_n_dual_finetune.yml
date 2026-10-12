@@ -1,0 +1,53 @@
+__include__: [
+  './dfine_hgnetv2_n_custom.yml',
+]
+
+output_dir: ./output/dfine_rot180_dual_backbone_finetune
+
+# Fine-tune the best dual-backbone EMA weights without entering the stage-2
+# checkpoint-reload loop. Strong spatial/color augmentation is disabled so
+# the small rail-mix validation curve is less volatile.
+epoches: 40
+
+optimizer:
+  type: AdamW
+  params:
+    -
+      params: '^(?=.*backbone)(?!.*norm|bn).*$'
+      lr: 0.00004
+    -
+      params: '^(?=.*backbone)(?=.*norm|bn).*$'
+      lr: 0.00004
+      weight_decay: 0.
+    -
+      params: '^(?=.*rot180_fusion).*$'
+      lr: 0.00005
+    -
+      params: '^(?=.*(?:encoder|decoder))(?=.*(?:norm|bn|bias)).*$'
+      weight_decay: 0.
+
+  lr: 0.00008
+  betas: [0.9, 0.999]
+  weight_decay: 0.0001
+
+lr_scheduler:
+  type: MultiStepLR
+  milestones: [25]
+  gamma: 0.1
+
+lr_warmup_scheduler:
+  type: LinearWarmup
+  warmup_duration: 100
+
+train_dataloader:
+  total_batch_size: 8
+  dataset:
+    transforms:
+      policy:
+        epoch: 0
+  collate_fn:
+    stop_epoch: 500
+    base_size_repeat: ~
+
+val_dataloader:
+  total_batch_size: 8
